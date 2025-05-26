@@ -1,5 +1,5 @@
 import { useEffect, useReducer } from 'react';
-import api from '../services/api';
+import api from '../utils/api';
 import { dataFetchReducer, initialState } from './dataFetchReducer';
 
 export function useFetch(endpoint, immediate = true) {
