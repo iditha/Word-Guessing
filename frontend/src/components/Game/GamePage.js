@@ -9,7 +9,7 @@ import GameDisplay from './GameDisplay';
 import GameResult from './GameResult';
 
 
-export default function Game() {
+export default function GamePage() {
     const location = useLocation();
     const navigate = useNavigate();
     const { nickname, category } = location.state || {};

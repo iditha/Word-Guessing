@@ -1,20 +1,22 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Menu from './components/Menu'; // layout with nav bar
 import IntroPage from './components/IntroPage';
-import Game from './components/Game/Game';
-
+import GamePage from './components/Game/GamePage';
+import Leaderboard from './components/LeaderboardPage';
 
 function App() {
-  return (
-      <Router>
-        <Routes>
-          <Route path="/" element={<IntroPage />} />
-            <Route path="/game" element={<Game />} />
-            <Route path="*" element={<h2>404 - Page Not Found</h2>} />
-        </Routes>
-      </Router>
-  );
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<Menu />}>
+                    <Route index element={<IntroPage />} />
+                    <Route path="game" element={<GamePage />} />
+                    <Route path="leaderboard" element={<Leaderboard />} />
+                    <Route path="*" element={<h2>404 - Page Not Found</h2>} />
+                </Route>
+            </Routes>
+        </BrowserRouter>
+    );
 }
 
 export default App;
