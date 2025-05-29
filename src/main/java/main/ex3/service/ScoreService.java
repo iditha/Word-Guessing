@@ -12,49 +12,51 @@ public class ScoreService {
     private static final String SCORE_FILE = "scores.ser";
     private final Object lock = new Object();
 
-    // Load scores from file
-    private List<ScoreEntry> loadScores() {
-        synchronized (lock) {
-            File file = new File(SCORE_FILE);
-            if (!file.exists()) return new ArrayList<>();
-            try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
-                return (List<ScoreEntry>) in.readObject();
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to load scores.ser", e);
-            }
+    // Internal method to load scores
+    private List<ScoreEntry> loadScoresInternal() {
+        File file = new File(SCORE_FILE);
+        if (!file.exists()) return new ArrayList<>();
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
+            return (List<ScoreEntry>) in.readObject();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load scores.ser", e);
         }
     }
 
-    // Save scores to file
-    private void saveScores(List<ScoreEntry> scores) {
-        synchronized (lock) {
-            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(SCORE_FILE))) {
-                out.writeObject(scores);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to save scores.ser", e);
-            }
+    // Internal method to save scores
+    private void saveScoresInternal(List<ScoreEntry> scores) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(SCORE_FILE))) {
+            out.writeObject(scores);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save scores.ser", e);
         }
     }
 
-    // Add a new score
+    // Thread-safe method to add a new score
     public void addScore(ScoreEntry newEntry) {
-        List<ScoreEntry> scores = loadScores();
-        scores.add(newEntry);
-        saveScores(scores);
+        synchronized (lock) {
+            List<ScoreEntry> scores = loadScoresInternal();
+            scores.add(newEntry);
+            saveScoresInternal(scores);
+        }
     }
 
-    // Get top N scores sorted descending
+    // Thread-safe method to get top scores
     public List<ScoreEntry> getTopScores(int maxResults) {
-        return loadScores().stream()
-                .sorted(Comparator.comparingInt(ScoreEntry::getScore).reversed())
-                .limit(maxResults)
-                .collect(Collectors.toList());
+        synchronized (lock) {
+            return loadScoresInternal().stream()
+                    .sorted(Comparator.comparingInt(ScoreEntry::getScore).reversed())
+                    .limit(maxResults)
+                    .collect(Collectors.toList());
+        }
     }
 
-    // Get all scores sorted descending
+    // Thread-safe method to get all scores sorted
     public List<ScoreEntry> getAllScoresSorted() {
-        return loadScores().stream()
-                .sorted(Comparator.comparingInt(ScoreEntry::getScore).reversed())
-                .collect(Collectors.toList());
+        synchronized (lock) {
+            return loadScoresInternal().stream()
+                    .sorted(Comparator.comparingInt(ScoreEntry::getScore).reversed())
+                    .collect(Collectors.toList());
+        }
     }
 }

@@ -52,25 +52,36 @@ public class WordController {
         }
     }
 
-    // PUT /api/words/{word} - Update word (by word string + category)
-    @PutMapping("/{word}")
-    public ResponseEntity<?> updateWord(@PathVariable String word, @RequestBody WordEntry updated) {
+    // PUT /api/words/{id} - Update word (by id)
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateWordById(@PathVariable String id, @RequestBody WordEntry updated) {
         try {
-            wordService.updateWord(word, updated);
+            wordService.updateWordById(id, updated);
             return ResponseEntity.ok("Word updated successfully.");
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
-    // DELETE /api/words/{word}?category=xyz - Delete word from category
-    @DeleteMapping("/{word}")
-    public ResponseEntity<?> deleteWord(@PathVariable String word, @RequestParam String category) {
+    // DELETE /api/words/{id} - Delete word by id
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteWordById(@PathVariable String id) {
         try {
-            wordService.deleteWord(word, category);
+            wordService.deleteWordById(id);
             return ResponseEntity.ok("Word deleted successfully.");
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getWordById(@PathVariable String id) {
+        Optional<WordEntry> wordOpt = wordService.getWordById(id);
+        if (wordOpt.isPresent()) {
+            return ResponseEntity.ok(wordOpt.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Word not found.");
+        }
+    }
+
 }

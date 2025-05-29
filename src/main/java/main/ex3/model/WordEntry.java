@@ -1,24 +1,38 @@
 package main.ex3.model;
 
 import java.io.Serializable;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class WordEntry implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private String category; // lowercase a-z only
-    private String word;     // lowercase a-z only
-    private String hint;     // any text, non-null
+    private String id;        // Unique identifier (immutable once set)
+    private String category;  // lowercase a-z only
+    private String word;      // lowercase a-z only
+    private String hint;      // any text, non-null
 
     private static final Pattern VALID_PATTERN = Pattern.compile("^[a-z]+$");
 
     public WordEntry() {
+        this.id = UUID.randomUUID().toString();
     }
 
     public WordEntry(String category, String word, String hint) {
+        this(); // sets the id
         setCategory(category);
         setWord(word);
         setHint(hint);
+    }
+
+    // ------------------ Getters & Setters ------------------
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getCategory() {
@@ -57,7 +71,8 @@ public class WordEntry implements Serializable {
     @Override
     public String toString() {
         return "WordEntry{" +
-                "category='" + category + '\'' +
+                "id='" + id + '\'' +
+                ", category='" + category + '\'' +
                 ", word='" + word + '\'' +
                 ", hint='" + hint + '\'' +
                 '}';
