@@ -1,12 +1,12 @@
 import React, { useEffect, useReducer } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Container, Button, Spinner } from 'react-bootstrap';
-import api from '../../utils/api';
-import { gameReducer, initialGameState } from '../../hooks/gameReducer';
-import { calculateScore } from '../../utils/gameUtils';
-import GameControls from './GameControls';
-import GameDisplay from './GameDisplay';
-import GameResult from './GameResult';
+import api from '../utils/api';
+import { gameReducer, initialGameState } from '../hooks/gameReducer';
+import { calculateScore } from '../utils/gameUtils';
+import GameControls from './Game/GameControls';
+import GameDisplay from './Game/GameDisplay';
+import GameResult from './Game/GameResult';
 
 
 export default function GamePage() {

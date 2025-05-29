@@ -2,7 +2,7 @@ import { useEffect, useReducer } from 'react';
 import api from '../utils/api';
 import { dataFetchReducer, initialState } from './dataFetchReducer';
 
-export function useFetch(endpoint, immediate = true) {
+export function useFetch(endpoint, immediate = true, deps = []) {
     const [state, dispatch] = useReducer(dataFetchReducer, initialState);
 
     useEffect(() => {
@@ -26,11 +26,10 @@ export function useFetch(endpoint, immediate = true) {
         };
 
         fetchData();
-
         return () => {
             isMounted = false;
         };
-    }, [endpoint, immediate]);
+    }, [endpoint, immediate, ...deps]);
 
-    return state; // { isLoading, isError, data, errorMessage }
+    return state;
 }
