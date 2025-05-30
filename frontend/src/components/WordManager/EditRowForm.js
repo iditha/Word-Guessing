@@ -1,9 +1,18 @@
 import React, { useState } from 'react';
-import { Button, Form } from 'react-bootstrap';
+import { Button, Form, Spinner, Alert } from 'react-bootstrap';
 import api from '../../utils/api';
+import { useFetch } from '../../hooks/useFetch';
 
-export default function EditRowForm({ wordInfo, onSaved, onCancel }) {
-    const [form, setForm] = useState(wordInfo);
+export default function EditRowForm({ id, onSaved, onCancel }) {
+    const { data: wordData, isLoading, isError, errorMessage } = useFetch(`/words/${id}`, true, [id]);
+    const [form, setForm] = useState(null);
+
+    // Update form state once wordData is fetched
+    React.useEffect(() => {
+        if (wordData) {
+            setForm(wordData);
+        }
+    }, [wordData]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -13,19 +22,40 @@ export default function EditRowForm({ wordInfo, onSaved, onCancel }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const payload = {
-            id: wordInfo.id,
+            id: form.id,
             word: form.word.trim(),
             category: form.category.trim(),
             hint: form.hint.trim(),
         };
 
         try {
-            await api.put(`/words/${wordInfo.id}`, payload);
+            await api.put(`/words/${form.id}`, payload);
             onSaved();
         } catch (err) {
-            console.warn('Update failed');
+            console.warn('Update failed:', err);
         }
     };
+
+    if (isLoading || !form) {
+        return (
+            <tr>
+                <td colSpan="4">
+                    <Spinner animation="border" size="sm" /> Loading...
+                </td>
+            </tr>
+        );
+    }
+
+    if (isError) {
+        return (
+            <tr>
+                <td colSpan="4">
+                    <Alert variant="danger">Failed to load word: {errorMessage}</Alert>
+                    <Button size="sm" onClick={onCancel}>Back</Button>
+                </td>
+            </tr>
+        );
+    }
 
     return (
         <tr>

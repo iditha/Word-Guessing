@@ -3,7 +3,7 @@ import { Table, Button } from 'react-bootstrap';
 import api from '../../utils/api';
 import EditRowForm from './EditRowForm';
 
-export default function WordTable({ words, editTarget, onEdit, onCancelEdit, onSaved, onDelete }) {
+export default function WordTable({ words, editId, onEdit, onCancelEdit, onSaved, onDelete }) {
     const handleDelete = async (id) => {
         try {
             await api.delete(`/words/${id}`);
@@ -25,10 +25,10 @@ export default function WordTable({ words, editTarget, onEdit, onCancelEdit, onS
             </thead>
             <tbody>
             {words.map((entry) =>
-                editTarget?.id === entry.id ? (
+                editId === entry.id ? (
                     <EditRowForm
                         key={entry.id}
-                        wordInfo={entry}
+                        id={entry.id}
                         onCancel={onCancelEdit}
                         onSaved={onSaved}
                     />

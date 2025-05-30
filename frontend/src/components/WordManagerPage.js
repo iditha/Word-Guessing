@@ -6,7 +6,7 @@ import WordTable from './WordManager/WordTable';
 
 export default function WordManagerPage() {
     const [refreshTrigger, setRefreshTrigger] = useState(0);
-    const [editTarget, setEditTarget] = useState(null); // { id, word, category }
+    const [editId, setEditId] = useState(null);
 
     const navigate = useNavigate();
     const handleRefresh = () => setRefreshTrigger(prev => prev + 1);
@@ -33,11 +33,11 @@ export default function WordManagerPage() {
             ) : (
                 <WordTable
                     words={words}
-                    editTarget={editTarget}
-                    onEdit={setEditTarget}
-                    onCancelEdit={() => setEditTarget(null)}
+                    editId={editId}
+                    onEdit={(entry) => setEditId(entry.id)}
+                    onCancelEdit={() => setEditId(null)}
                     onSaved={() => {
-                        setEditTarget(null);
+                        setEditId(null);
                         handleRefresh();
                     }}
                     onDelete={handleRefresh}
