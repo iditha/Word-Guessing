@@ -7,12 +7,28 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Service layer for managing {@link WordEntry} instances.
+ * Provides thread-safe CRUD operations backed by serialization to a local file.
+ *
+ * <p>Words are persisted in a file named {@code words.ser}.
+ * All operations are synchronized to ensure thread safety.</p>
+ *
+ * @author Idit Halevi
+ * @version 1.0
+ * @since 2025-05-30
+ */
 @Service
 public class WordService {
     private final String WORDS_FILE = "words.ser";
     private final Object lock = new Object();
 
-    // Load words from file
+    /**
+     * Loads all word entries from the serialized file.
+     *
+     * @return list of all {@link WordEntry} objects
+     * @throws RuntimeException if the file cannot be read
+     */
     private List<WordEntry> loadWordsInternal() {
         File file = new File(WORDS_FILE);
         if (!file.exists()) return new ArrayList<>();
@@ -23,7 +39,12 @@ public class WordService {
         }
     }
 
-    // Save words to file
+    /**
+     * Saves the provided list of word entries to the serialized file.
+     *
+     * @param words the list of {@link WordEntry} objects to save
+     * @throws RuntimeException if the file cannot be written
+     */
     private void saveWordsInternal(List<WordEntry> words) {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(WORDS_FILE))) {
             out.writeObject(words);
@@ -32,12 +53,22 @@ public class WordService {
         }
     }
 
+    /**
+     * Retrieves all word entries from storage.
+     *
+     * @return a list of all words
+     */
     public List<WordEntry> getAllWords() {
         synchronized (lock) {
             return new ArrayList<>(loadWordsInternal());
         }
     }
 
+    /**
+     * Returns a set of all unique categories from the stored word entries.
+     *
+     * @return a set of category names
+     */
     public Set<String> getAllCategories() {
         synchronized (lock) {
             return loadWordsInternal().stream()
@@ -46,6 +77,12 @@ public class WordService {
         }
     }
 
+    /**
+     * Adds a new word entry if it does not already exist.
+     *
+     * @param newWord the word to add
+     * @throws IllegalArgumentException if validation fails or word already exists
+     */
     public void addWord(WordEntry newWord) {
         synchronized (lock) {
             validateWordEntry(newWord);
@@ -64,6 +101,14 @@ public class WordService {
         }
     }
 
+    /**
+     * Updates an existing word entry by its ID.
+     *
+     * @param id      the ID of the word to update
+     * @param updated the updated word data
+     * @throws IllegalArgumentException if validation fails or ID mismatch
+     * @throws NoSuchElementException   if the word ID is not found
+     */
     public void updateWordById(String id, WordEntry updated) {
         synchronized (lock) {
             if (!updated.getId().equals(id)) {
@@ -91,7 +136,12 @@ public class WordService {
         }
     }
 
-    // Validation helper method
+    /**
+     * Validates a {@link WordEntry} for required fields and allowed formats.
+     *
+     * @param entry the entry to validate
+     * @throws IllegalArgumentException if validation fails
+     */
     private void validateWordEntry(WordEntry entry) {
         if (entry == null) {
             throw new IllegalArgumentException("Word entry cannot be null.");
@@ -110,7 +160,12 @@ public class WordService {
         }
     }
 
-
+    /**
+     * Deletes a word entry by its ID.
+     *
+     * @param id the ID of the word to delete
+     * @throws NoSuchElementException if the ID is not found
+     */
     public void deleteWordById(String id) {
         synchronized (lock) {
             List<WordEntry> words = loadWordsInternal();
@@ -120,6 +175,13 @@ public class WordService {
         }
     }
 
+    /**
+     * Returns a random word from the specified category.
+     *
+     * @param category the name of the category
+     * @return a randomly selected {@link WordEntry}
+     * @throws NoSuchElementException if no word exists for the category
+     */
     public WordEntry getRandomWordByCategory(String category) {
         synchronized (lock) {
             List<WordEntry> matching = loadWordsInternal().stream()
@@ -133,6 +195,12 @@ public class WordService {
         }
     }
 
+    /**
+     * Retrieves a word entry by its ID.
+     *
+     * @param id the ID to look up
+     * @return an {@link Optional} containing the word if found, or empty otherwise
+     */
     public Optional<WordEntry> getWordById(String id) {
         synchronized (lock) {
             return loadWordsInternal().stream()
@@ -141,6 +209,14 @@ public class WordService {
         }
     }
 
+    /**
+     * Checks whether a word already exists (case-insensitive).
+     *
+     * @param words     the list of all existing words
+     * @param word      the word to check
+     * @param excludeId optional ID to exclude from matching (useful when updating)
+     * @return {@code true} if the word exists, {@code false} otherwise
+     */
     private boolean wordExists(List<WordEntry> words, String word, String excludeId) {
         return words.stream().anyMatch(w ->
                 w.getWord().equalsIgnoreCase(word) &&

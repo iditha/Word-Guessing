@@ -8,29 +8,64 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
+/**
+ * REST controller for managing words and categories in the system.
+ *
+ * <p>Provides endpoints to retrieve, add, update, and delete word entries, as well as
+ * fetch words by category or retrieve a random word.</p>
+ *
+ * @author Idit Halevi
+ * @version 1.0
+ * @since   2025-05-30
+ */
 @RestController
 @RequestMapping("/api/words")
 public class WordController {
 
     private final WordService wordService;
 
+    /**
+     * Constructs a new {@code WordController} with the given {@link WordService}.
+     *
+     * @param wordService the service responsible for word-related operations
+     */
     public WordController(WordService wordService) {
         this.wordService = wordService;
     }
 
-    // GET /api/words - Get all words
+    /**
+     * Retrieves all word entries.
+     *
+     * <p>Handles HTTP GET requests to {@code /api/words}.</p>
+     *
+     * @return a {@link ResponseEntity} containing the list of all {@link WordEntry} objects
+     */
     @GetMapping
     public ResponseEntity<List<WordEntry>> getAllWords() {
         return ResponseEntity.ok(wordService.getAllWords());
     }
 
-    // GET /api/words/categories - Get all categories
+    /**
+     * Retrieves all unique word categories.
+     *
+     * <p>Handles HTTP GET requests to {@code /api/words/categories}.</p>
+     *
+     * @return a {@link ResponseEntity} containing a set of category names
+     */
     @GetMapping("/categories")
     public ResponseEntity<Set<String>> getCategories() {
         return ResponseEntity.ok(wordService.getAllCategories());
     }
 
-    // GET /api/words/random?category=xyz - Get random word from category
+    /**
+     * Retrieves a random word from the specified category.
+     *
+     * <p>Handles HTTP GET requests to {@code /api/words/random?category=xyz}.</p>
+     *
+     * @param category the name of the category to fetch a word from
+     * @return a {@link ResponseEntity} containing a random {@link WordEntry},
+     *         or 404 if no words are found in the category
+     */
     @GetMapping("/random")
     public ResponseEntity<?> getRandomWord(@RequestParam String category) {
         try {
@@ -41,7 +76,14 @@ public class WordController {
         }
     }
 
-    // POST /api/words - Add new word
+    /**
+     * Adds a new word entry.
+     *
+     * <p>Handles HTTP POST requests to {@code /api/words}.</p>
+     *
+     * @param word the {@link WordEntry} to add
+     * @return a {@link ResponseEntity} with a success or error message
+     */
     @PostMapping
     public ResponseEntity<?> addWord(@RequestBody WordEntry word) {
         try {
@@ -52,7 +94,15 @@ public class WordController {
         }
     }
 
-    // PUT /api/words/{id} - Update word (by id)
+    /**
+     * Updates an existing word entry by its ID.
+     *
+     * <p>Handles HTTP PUT requests to {@code /api/words/{id}}.</p>
+     *
+     * @param id the ID of the word to update
+     * @param updated the updated {@link WordEntry} object
+     * @return a {@link ResponseEntity} with the result of the operation
+     */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateWordById(@PathVariable String id, @RequestBody WordEntry updated) {
         try {
@@ -65,7 +115,14 @@ public class WordController {
         }
     }
 
-    // DELETE /api/words/{id} - Delete word by id
+    /**
+     * Deletes a word entry by its ID.
+     *
+     * <p>Handles HTTP DELETE requests to {@code /api/words/{id}}.</p>
+     *
+     * @param id the ID of the word to delete
+     * @return a {@link ResponseEntity} with the result of the deletion
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteWordById(@PathVariable String id) {
         try {
@@ -76,6 +133,14 @@ public class WordController {
         }
     }
 
+    /**
+     * Retrieves a word entry by its ID.
+     *
+     * <p>Handles HTTP GET requests to {@code /api/words/{id}}.</p>
+     *
+     * @param id the ID of the word to retrieve
+     * @return a {@link ResponseEntity} containing the {@link WordEntry}, or 404 if not found
+     */
     @GetMapping("/{id}")
     public ResponseEntity<?> getWordById(@PathVariable String id) {
         Optional<WordEntry> wordOpt = wordService.getWordById(id);

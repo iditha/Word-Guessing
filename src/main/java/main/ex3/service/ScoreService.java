@@ -7,12 +7,34 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
+/**
+ * A service for managing user scores using file-based persistence.
+ *
+ * <p>Supports adding scores and retrieving them (all or top N), with built-in thread-safety.</p>
+ *
+ * <p>Scores are stored in a serialized file: {@code scores.ser}.</p>
+ *
+ * <p>When a user submits a score, the service will only update their stored score
+ * if the new score is higher than their previous best.</p>
+ *
+ * <p>All methods are thread-safe.</p>
+ *
+ * @author Idit Halevi
+ * @version 1.0
+ * @since 2025-05-30
+ */
 @Service
 public class ScoreService {
     private static final String SCORE_FILE = "scores.ser";
     private final Object lock = new Object();
 
-    // Internal method to load scores
+    /**
+     * Loads the list of scores from the file.
+     *
+     * @return a list of {@link ScoreEntry} objects; empty if file doesn't exist
+     * @throws RuntimeException if deserialization fails
+     */
     private List<ScoreEntry> loadScoresInternal() {
         File file = new File(SCORE_FILE);
         if (!file.exists()) return new ArrayList<>();
@@ -23,7 +45,12 @@ public class ScoreService {
         }
     }
 
-    // Internal method to save scores
+    /**
+     * Saves the given list of scores to the file.
+     *
+     * @param scores the list to persist
+     * @throws RuntimeException if serialization fails
+     */
     private void saveScoresInternal(List<ScoreEntry> scores) {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(SCORE_FILE))) {
             out.writeObject(scores);
@@ -32,7 +59,11 @@ public class ScoreService {
         }
     }
 
-    // Thread-safe method to add a new score
+    /**
+     * Adds a new score entry or updates an existing one if the new score is higher.
+     *
+     * @param newEntry the new {@link ScoreEntry}
+     */
     public void addScore(ScoreEntry newEntry) {
         synchronized (lock) {
             List<ScoreEntry> scores = loadScoresInternal();
@@ -55,7 +86,12 @@ public class ScoreService {
         }
     }
 
-    // Thread-safe method to get top scores
+    /**
+     * Retrieves the top N scores sorted in descending order.
+     *
+     * @param maxResults maximum number of top scores to return
+     * @return list of top {@link ScoreEntry} objects
+     */
     public List<ScoreEntry> getTopScores(int maxResults) {
         synchronized (lock) {
             return loadScoresInternal().stream()
@@ -65,7 +101,11 @@ public class ScoreService {
         }
     }
 
-    // Thread-safe method to get all scores sorted
+    /**
+     * Retrieves all scores sorted in descending order.
+     *
+     * @return list of all {@link ScoreEntry} objects
+     */
     public List<ScoreEntry> getAllScoresSorted() {
         synchronized (lock) {
             return loadScoresInternal().stream()

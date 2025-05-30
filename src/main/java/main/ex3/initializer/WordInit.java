@@ -7,8 +7,28 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Initializes a list of predefined {@link WordEntry} objects and serializes them to a file.
+ *
+ * <p>The serialized file is named {@code words.ser} and can be used to prepopulate
+ * the application's word repository.</p>
+ *
+ * <p>Each word has a category, term, and hint description.</p>
+ *
+ * @author  Idit Halevi
+ * @version 1.0
+ * @since   2025-05-30
+ */
 public class WordInit {
 
+    /**
+     * Entry point of the word initializer.
+     *
+     * <p>Creates a list of sample {@link WordEntry} objects, then serializes the list
+     * to a file called {@code words.ser}.</p>
+     *
+     * @param args command-line arguments (not used)
+     */
     public static void main(String[] args) {
         List<WordEntry> words = new ArrayList<>();
 
