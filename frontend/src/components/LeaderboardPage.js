@@ -3,6 +3,15 @@ import { Table, Container, Spinner, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useFetch } from '../hooks/useFetch';
 
+/**
+ * Displays the leaderboard with nicknames and scores fetched from the server.
+ *
+ * Fetches data using the `useFetch('/scores')` hook and displays it in a Bootstrap table.
+ * Shows loading and error states as appropriate. Includes a button to return to the home page.
+ *
+ * @component
+ * @returns {JSX.Element} Leaderboard UI.
+ */
 export default function LeaderboardPage() {
     const { isLoading, isError, errorMessage, data: scores } = useFetch('/scores');
     const navigate = useNavigate();

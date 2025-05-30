@@ -2,6 +2,19 @@ import React from 'react';
 import { Container, Navbar, Nav } from 'react-bootstrap';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 
+/**
+ * Renders the main navigation menu using React-Bootstrap and React Router.
+ * Displays links to:
+ * - Home
+ * - Leaderboard
+ * - Word Manager
+ * - About
+ *
+ * Highlights the active route and displays the nested page content using `<Outlet />`.
+ *
+ * @component
+ * @returns {JSX.Element} The navigation bar and routed content.
+ */
 export default function Menu() {
     const location = useLocation();
 

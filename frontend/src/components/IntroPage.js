@@ -3,6 +3,24 @@ import { useNavigate } from 'react-router-dom';
 import {Container, Form, Button, Spinner, Alert} from 'react-bootstrap';
 import { useFetch } from '../hooks/useFetch';
 
+/**
+ * Component that renders the game’s intro screen where users:
+ * - Enter a nickname.
+ * - Select a word category fetched from the server.
+ *
+ * Validates form input and navigates to the game screen with the selected data.
+ *
+ * @component
+ * @returns {JSX.Element} The intro page with nickname and category selection.
+ *
+ * State:
+ * - `nickname`: User-entered nickname.
+ * - `selectedCategory`: Chosen category from fetched list.
+ * - `formError`: Tracks form-level validation errors.
+ *
+ * Hooks:
+ * - `useFetch('/words/categories')`: Fetches available categories from server.
+ */
 function IntroPage() {
     const [nickname, setNickname] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
@@ -16,6 +34,14 @@ function IntroPage() {
         data: categories,
     } = useFetch('/words/categories');
 
+    /**
+     * Handles form submission.
+     * - Prevents default page reload.
+     * - Validates that nickname and category are filled.
+     * - Navigates to `/game` with the nickname and selected category in state.
+     *
+     * @param {React.FormEvent<HTMLFormElement>} e - The form submission event.
+     */
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!nickname.trim() || !selectedCategory) {

@@ -4,6 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { useFetch } from '../hooks/useFetch';
 import WordTable from './WordManager/WordTable';
 
+/**
+ * Admin panel component for managing the list of words.
+ * Fetches the list from the backend and allows adding, editing, and deleting words.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} The Word Manager page, including a table of words and a button to add a new word.
+ */
 export default function WordManagerPage() {
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [editId, setEditId] = useState(null);

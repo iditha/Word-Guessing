@@ -1,3 +1,21 @@
+/**
+ * The initial state for the hangman-style word guessing game.
+ *
+ * @constant
+ * @type {Object}
+ * @property {string} word - The actual word to guess.
+ * @property {string} hint - A hint for the word.
+ * @property {string[]} displayWord - The current visible state of the word (e.g., ['_', '_', 'e']).
+ * @property {string[]} guessedLetters - List of letters the user has already guessed.
+ * @property {number} attemptsLeft - Number of remaining incorrect guesses allowed.
+ * @property {boolean} hintUsed - Whether the hint has been used.
+ * @property {string} input - Current input value for letter guess.
+ * @property {boolean} gameOver - Whether the game has ended.
+ * @property {boolean} gameWon - Whether the user has successfully guessed the word.
+ * @property {number} timeElapsed - Seconds since game start.
+ * @property {string} fetchError - Error message for fetch failures.
+ * @property {string|null} scoreSaveError - Error message when saving score fails.
+ */
 export const initialGameState = {
     word: '',
     hint: '',
@@ -13,6 +31,19 @@ export const initialGameState = {
     scoreSaveError: null,
 };
 
+/**
+ * Reducer function to manage the state transitions of the game.
+ * Supports actions like setting the word, ticking the timer, guessing letters, using hints, etc.
+ *
+ * @function
+ * @param {Object} state - Current state of the game.
+ * @param {Object} action - Action to perform on the state.
+ * @param {string} action.type - Type of the action.
+ * @param {any} [action.payload] - Optional data for the action.
+ * @returns {Object} New state based on the action.
+ *
+ * @throws {Error} If an unhandled action type is provided.
+ */
 export function gameReducer(state, action) {
     switch (action.type) {
         case 'SET_WORD':

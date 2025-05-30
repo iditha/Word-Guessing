@@ -8,7 +8,13 @@ import GameControls from './Game/GameControls';
 import GameDisplay from './Game/GameDisplay';
 import GameResult from './Game/GameResult';
 
-
+/**
+ * GamePage component serves as the main game interface for players.
+ * It handles game logic, UI rendering, data fetching, and game state updates.
+ *
+ * @component
+ * @returns {JSX.Element} Rendered component for the game interface.
+ */
 export default function GamePage() {
     const location = useLocation();
     const navigate = useNavigate();
@@ -16,12 +22,17 @@ export default function GamePage() {
 
     const [state, dispatch] = useReducer(gameReducer, initialGameState);
 
-    // Redirect if missing info
+    /**
+     * Redirects user to home if essential game parameters are missing (e.g., nickname, category).
+     */
     useEffect(() => {
         if (!nickname || !category) navigate('/');
     }, [nickname, category, navigate]);
 
-    // Fetch word
+    /**
+     * Fetches a random word from the backend based on the selected category.
+     * Handles and displays fetch errors with user-friendly messages.
+     */
     useEffect(() => {
         const fetchWord = async () => {
             try {
@@ -51,7 +62,9 @@ export default function GamePage() {
     }, [category, navigate]);
 
 
-    // Timer
+    /**
+     * Timer effect: increments the elapsed time each second unless the game is over.
+     */
     useEffect(() => {
         if (state.gameOver) return;
         const interval = setInterval(() => {
@@ -60,7 +73,10 @@ export default function GamePage() {
         return () => clearInterval(interval);
     }, [state.gameOver]);
 
-    // Submit score
+    /**
+     * When the game is over, calculates the final score and submits it to the server.
+     * Handles failure in saving the score gracefully.
+     */
     useEffect(() => {
         if (state.gameOver) {
             const score = calculateScore(state);
@@ -73,6 +89,11 @@ export default function GamePage() {
         }
     }, [state.gameOver, nickname]);
 
+    /**
+     * Handles the user's letter guess.
+     *
+     * @param {React.FormEvent} e - The form submission event.
+     */
     const handleGuess = (e) => {
         e.preventDefault();
         const letter = state.input.trim().toLowerCase();

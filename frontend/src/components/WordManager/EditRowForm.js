@@ -11,12 +11,31 @@ const ERROR_MESSAGES = {
     requiredHint: 'Hint is required.',
 };
 
+/**
+ * Inline editable form used for updating an existing word within a table row.
+ * Performs client-side validation and submits the update to the server.
+ *
+ * @component
+ * @param {Object} props - Component props.
+ * @param {number} props.id - ID of the word to edit.
+ * @param {Function} props.onSaved - Callback when the word is successfully updated.
+ * @param {Function} props.onCancel - Callback to cancel editing mode.
+ *
+ * @returns {JSX.Element} A table row containing form fields and save/cancel buttons.
+ */
 export default function EditRowForm({ id, onSaved, onCancel }) {
     const { data: wordData, isLoading, isError, errorMessage } = useFetch(`/words/${id}`, true, [id]);
     const [serverError, setServerError] = useState(null);
     const [form, setForm] = useState({ word: '', category: '', hint: '', id: null });
     const [fieldErrors, setFieldErrors] = useState({});
 
+    /**
+     * Initializes form state with word data from API.
+     * Runs when `wordData` changes (i.e., data has finished loading).
+     *
+     * @function
+     * @effect
+     */
     useEffect(() => {
         if (wordData) {
             setForm({
@@ -28,6 +47,13 @@ export default function EditRowForm({ id, onSaved, onCancel }) {
         }
     }, [wordData]);
 
+    /**
+     * Updates form state as the user types into input fields.
+     * Clears individual field error and server error messages.
+     *
+     * @function
+     * @param {React.ChangeEvent<HTMLInputElement>} e - Input change event.
+     */
     const handleChange = (e) => {
         const { name, value } = e.target;
         setForm(prev => ({ ...prev, [name]: value }));
@@ -35,6 +61,12 @@ export default function EditRowForm({ id, onSaved, onCancel }) {
         setServerError(null);
     };
 
+    /**
+     * Validates form fields for required values and correct formats.
+     *
+     * @function
+     * @returns {Object} An object containing validation error messages keyed by field name.
+     */
     const validateFields = () => {
         const errors = {};
 
@@ -57,6 +89,15 @@ export default function EditRowForm({ id, onSaved, onCancel }) {
         return errors;
     };
 
+    /**
+     * Handles form submission for updating a word.
+     * Performs client-side validation and sends a PUT request to the backend API.
+     * Displays error messages if validation or request fails.
+     *
+     * @async
+     * @function
+     * @param {React.FormEvent<HTMLFormElement> | React.MouseEvent} e - The form submit event.
+     */
     const handleSubmit = async (e) => {
         e.preventDefault();
         const errors = validateFields();
