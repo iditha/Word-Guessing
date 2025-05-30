@@ -48,10 +48,12 @@ public class WordService {
 
     public void addWord(WordEntry newWord) {
         synchronized (lock) {
+            validateWordEntry(newWord);
+
             List<WordEntry> words = loadWordsInternal();
-            boolean exists = words.stream().anyMatch(w ->
-                    w.getWord().equalsIgnoreCase(newWord.getWord()));
-            if (exists) throw new IllegalArgumentException("Word already exists.");
+            if (wordExists(words, newWord.getWord(), null)) {
+                throw new IllegalArgumentException("Word already exists.");
+            }
 
             if (newWord.getId() == null || newWord.getId().isEmpty()) {
                 newWord.setId(UUID.randomUUID().toString());
@@ -68,15 +70,16 @@ public class WordService {
                 throw new IllegalArgumentException("ID in path and body must match.");
             }
 
+            validateWordEntry(updated);
+
             List<WordEntry> words = loadWordsInternal();
+            if (wordExists(words, updated.getWord(), id)) {
+                throw new IllegalArgumentException("Word already exists.");
+            }
+
             boolean updatedFlag = false;
-
-            System.out.println("Trying to update ID: " + id);
-            words.forEach(w -> System.out.println("Existing ID: " + w.getId()));
-
             for (int i = 0; i < words.size(); i++) {
-                WordEntry w = words.get(i);
-                if (w.getId().equals(id)) {
+                if (words.get(i).getId().equals(id)) {
                     words.set(i, updated);
                     updatedFlag = true;
                     break;
@@ -87,6 +90,26 @@ public class WordService {
             saveWordsInternal(words);
         }
     }
+
+    // Validation helper method
+    private void validateWordEntry(WordEntry entry) {
+        if (entry == null) {
+            throw new IllegalArgumentException("Word entry cannot be null.");
+        }
+
+        if (entry.getWord() == null || !entry.getWord().matches("[a-zA-Z]+")) {
+            throw new IllegalArgumentException("Word must contain only letters (A–Z, a–z) and must not be empty.");
+        }
+
+        if (entry.getCategory() == null || !entry.getCategory().matches("[a-zA-Z]+")) {
+            throw new IllegalArgumentException("Category must contain only letters (A–Z, a–z) and must not be empty.");
+        }
+
+        if (entry.getHint() == null || entry.getHint().trim().isEmpty()) {
+            throw new IllegalArgumentException("Hint must not be empty.");
+        }
+    }
+
 
     public void deleteWordById(String id) {
         synchronized (lock) {
@@ -117,4 +140,12 @@ public class WordService {
                     .findFirst();
         }
     }
+
+    private boolean wordExists(List<WordEntry> words, String word, String excludeId) {
+        return words.stream().anyMatch(w ->
+                w.getWord().equalsIgnoreCase(word) &&
+                        (excludeId == null || !w.getId().equals(excludeId))
+        );
+    }
+
 }

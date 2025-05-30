@@ -36,7 +36,21 @@ public class ScoreService {
     public void addScore(ScoreEntry newEntry) {
         synchronized (lock) {
             List<ScoreEntry> scores = loadScoresInternal();
-            scores.add(newEntry);
+
+            Optional<ScoreEntry> existingEntryOpt = scores.stream()
+                    .filter(e -> e.getNickname().equalsIgnoreCase(newEntry.getNickname()))
+                    .findFirst();
+
+            if (existingEntryOpt.isPresent()) {
+                ScoreEntry existingEntry = existingEntryOpt.get();
+                if (newEntry.getScore() > existingEntry.getScore()) {
+                    existingEntry.setScore(newEntry.getScore());
+                }
+                // else: ignore because the old score is higher
+            } else {
+                scores.add(newEntry);
+            }
+
             saveScoresInternal(scores);
         }
     }
