@@ -5,6 +5,7 @@ import GamePage from './components/GamePage';
 import Leaderboard from './components/LeaderboardPage';
 import WordManager from './components/WordManagerPage';
 import AddWord from './components/AddWord';
+import About from "./components/AboutPage";
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
                     <Route path="leaderboard" element={<Leaderboard />} />
                     <Route path="admin" element={<WordManager />} />
                     <Route path="/admin/add" element={<AddWord />} />
+                    <Route path="/about" element={<About />} />
                     <Route path="*" element={<h2>404 - Page Not Found</h2>} />
                 </Route>
             </Routes>
