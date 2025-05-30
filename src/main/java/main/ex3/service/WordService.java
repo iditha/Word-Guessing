@@ -85,7 +85,6 @@ public class WordService {
      */
     public void addWord(WordEntry newWord) {
         synchronized (lock) {
-            validateWordEntry(newWord);
 
             List<WordEntry> words = loadWordsInternal();
             if (wordExists(words, newWord.getWord(), null)) {
@@ -115,8 +114,6 @@ public class WordService {
                 throw new IllegalArgumentException("ID in path and body must match.");
             }
 
-            validateWordEntry(updated);
-
             List<WordEntry> words = loadWordsInternal();
             if (wordExists(words, updated.getWord(), id)) {
                 throw new IllegalArgumentException("Word already exists.");
@@ -133,30 +130,6 @@ public class WordService {
 
             if (!updatedFlag) throw new NoSuchElementException("Word not found to update.");
             saveWordsInternal(words);
-        }
-    }
-
-    /**
-     * Validates a {@link WordEntry} for required fields and allowed formats.
-     *
-     * @param entry the entry to validate
-     * @throws IllegalArgumentException if validation fails
-     */
-    private void validateWordEntry(WordEntry entry) {
-        if (entry == null) {
-            throw new IllegalArgumentException("Word entry cannot be null.");
-        }
-
-        if (entry.getWord() == null || !entry.getWord().matches("[a-zA-Z]+")) {
-            throw new IllegalArgumentException("Word must contain only letters (A–Z, a–z) and must not be empty.");
-        }
-
-        if (entry.getCategory() == null || !entry.getCategory().matches("[a-zA-Z]+")) {
-            throw new IllegalArgumentException("Category must contain only letters (A–Z, a–z) and must not be empty.");
-        }
-
-        if (entry.getHint() == null || entry.getHint().trim().isEmpty()) {
-            throw new IllegalArgumentException("Hint must not be empty.");
         }
     }
 

@@ -30,7 +30,8 @@ public class WordEntry implements Serializable {
     private String word;      // lowercase a-z only
     private String hint;      // any text, non-null
 
-    private static final Pattern VALID_PATTERN = Pattern.compile("^[a-z]+$");
+    // allows uppercase/lowercase letters and spaces
+    private static final Pattern VALID_PATTERN = Pattern.compile("^[A-Za-z ]+$");
 
     /**
      * Default constructor that auto-generates a unique ID.
@@ -72,6 +73,9 @@ public class WordEntry implements Serializable {
      * @param id the ID to assign
      */
     public void setId(String id) {
+        if (id == null || id.trim().isEmpty()) {
+            throw new IllegalArgumentException("ID must not be null or empty.");
+        }
         this.id = id;
     }
 
@@ -92,10 +96,14 @@ public class WordEntry implements Serializable {
      * @throws IllegalArgumentException if null or contains invalid characters
      */
     public void setCategory(String category) {
-        if (category == null || !VALID_PATTERN.matcher(category.toLowerCase()).matches()) {
-            throw new IllegalArgumentException("Category must contain only a-z letters");
+        if (category == null || category.trim().isEmpty()) {
+            throw new IllegalArgumentException("Category must not be empty.");
         }
-        this.category = category.toLowerCase();
+        String trimmed = category.trim();
+        if (!VALID_PATTERN.matcher(trimmed).matches()) {
+            throw new IllegalArgumentException("Category must contain only letters and spaces.");
+        }
+        this.category = trimmed.toLowerCase();
     }
 
     /**
@@ -115,11 +123,16 @@ public class WordEntry implements Serializable {
      * @throws IllegalArgumentException if null or contains invalid characters
      */
     public void setWord(String word) {
-        if (word == null || !VALID_PATTERN.matcher(word.toLowerCase()).matches()) {
-            throw new IllegalArgumentException("Word must contain only a-z letters");
+        if (word == null || word.trim().isEmpty()) {
+            throw new IllegalArgumentException("Word must not be empty.");
         }
-        this.word = word.toLowerCase();
+        String trimmed = word.trim();
+        if (!VALID_PATTERN.matcher(trimmed).matches()) {
+            throw new IllegalArgumentException("Word must contain only letters and spaces.");
+        }
+        this.word = trimmed.toLowerCase();
     }
+
 
     /**
      * Returns the hint associated with this word.
@@ -139,9 +152,9 @@ public class WordEntry implements Serializable {
      */
     public void setHint(String hint) {
         if (hint == null || hint.trim().isEmpty()) {
-            throw new IllegalArgumentException("Hint must not be empty");
+            throw new IllegalArgumentException("Hint must not be empty.");
         }
-        this.hint = hint;
+        this.hint = hint.trim();
     }
 
     /**

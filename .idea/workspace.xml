@@ -6,6 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="09242865-56e7-4638-850a-f83cef7a00b5" name="Changes" comment="Update README.md">
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/main/ex3/model/WordEntry.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/main/ex3/model/WordEntry.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/main/ex3/service/WordService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/main/ex3/service/WordService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -127,7 +130,7 @@
       <option name="presentableId" value="Default" />
       <updated>1748586911719</updated>
       <workItem from="1748586917121" duration="15064000" />
-      <workItem from="1748610416053" duration="5654000" />
+      <workItem from="1748610416053" duration="8470000" />
     </task>
     <task id="LOCAL‎-00001" summary="Updated validation on server side">
       <option name="closed" value="true" />
