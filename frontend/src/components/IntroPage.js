@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Form, Button, Spinner } from 'react-bootstrap';
+import {Container, Form, Button, Spinner, Alert} from 'react-bootstrap';
 import { useFetch } from '../hooks/useFetch';
 
 function IntroPage() {
@@ -56,6 +56,7 @@ function IntroPage() {
                             value={selectedCategory}
                             onChange={(e) => setSelectedCategory(e.target.value)}
                             isInvalid={!!formError && !selectedCategory}
+                            disabled={isError}
                         >
                             <option value="">-- Select a category --</option>
                             {categories.map((cat) => (
@@ -67,13 +68,30 @@ function IntroPage() {
                     )}
                 </Form.Group>
 
-                {(formError || isError) && (
-                    <div className="text-danger mb-3" style={{ fontSize: '0.9rem' }}>
-                        {formError || errorMessage}
-                    </div>
+                {formError && (
+                    <Alert variant="danger" className="mb-3">
+                        {formError}
+                    </Alert>
+                )}
+                {!isLoading && isError && (
+                    <Alert variant="danger" className="mb-3">
+                        Could not load categories (server unavailable). Please try again later.
+                    </Alert>
+                )}
+                {!isLoading && !isError && categories.length === 0 && (
+                    <Alert variant="warning" className="mb-3">
+                        No categories available. Please add some words on the server first.
+                    </Alert>
                 )}
 
-                <Button type="submit" variant="primary" disabled={isLoading}>
+                <Button
+                    type="submit"
+                    variant="primary"
+                    disabled={
+                    isLoading
+                    || isError
+                    || !nickname.trim()
+                    || !selectedCategory}>
                     Start Game
                 </Button>
             </Form>

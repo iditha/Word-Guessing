@@ -10,6 +10,7 @@ export const initialGameState = {
     gameWon: false,
     timeElapsed: 0,
     fetchError: '',
+    scoreSaveError: null,
 };
 
 export function gameReducer(state, action) {
@@ -54,6 +55,8 @@ export function gameReducer(state, action) {
             return { ...state, input: action.payload };
         case 'SET_FETCH_ERROR':
             return { ...state, fetchError: action.payload };
+        case 'SET_SCORE_SAVE_ERROR':
+            return { ...state, scoreSaveError: action.payload };
         default:
             throw new Error('Unhandled action type');
     }

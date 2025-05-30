@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Container, Button, Spinner } from 'react-bootstrap';
+import { Container, Button, Spinner, Alert } from 'react-bootstrap';
 import api from '../utils/api';
 import { gameReducer, initialGameState } from '../hooks/gameReducer';
 import { calculateScore } from '../utils/gameUtils';
@@ -28,11 +28,28 @@ export default function GamePage() {
                 const res = await api.get(`/words/random?category=${category}`);
                 dispatch({ type: 'SET_WORD', payload: res.data });
             } catch (err) {
-                dispatch({ type: 'SET_FETCH_ERROR', payload: 'Failed to load word. Please try again later.' });
+                const status = err.response?.status;
+                let message = 'Something went wrong. Please try again later.';
+
+                if (status === 404) {
+                    message = 'No word found in this category. Please try another one.';
+                } else if (status === 500) {
+                    message = 'Server error: could not load word data.';
+                } else if (!err.response) {
+                    message = 'Server unavailable. Please check your connection.';
+                }
+
+                dispatch({ type: 'SET_FETCH_ERROR', payload: message });
+
+                // Redirect back after showing error
+                setTimeout(() => {
+                    navigate('/');
+                }, 4000); // wait 4 seconds before redirect
             }
         };
         fetchWord();
-    }, [category]);
+    }, [category, navigate]);
+
 
     // Timer
     useEffect(() => {
@@ -48,7 +65,10 @@ export default function GamePage() {
         if (state.gameOver) {
             const score = calculateScore(state);
             api.post('/scores', { nickname, score }).catch(() => {
-                // handle silently or add inline error if desired
+                dispatch({
+                    type: 'SET_SCORE_SAVE_ERROR',
+                    payload: 'Score could not be saved. Server may be unavailable.',
+                });
             });
         }
     }, [state.gameOver, nickname]);
@@ -66,7 +86,9 @@ export default function GamePage() {
             <h3 className="mb-4">Category: {category}</h3>
 
             {state.fetchError ? (
-                <div className="text-danger mt-3">{state.fetchError}</div>
+                <Alert variant="danger" className="mt-3">
+                    {state.fetchError}
+                </Alert>
             ) : state.word ? (
                 <>
                     <GameDisplay
@@ -98,12 +120,19 @@ export default function GamePage() {
                             </Button>
                         </>
                     ) : (
-                        <GameResult
-                            gameWon={state.gameWon}
-                            word={state.word}
-                            score={calculateScore(state)}
-                        />
-                    )}
+                        <>
+                            <GameResult
+                                gameWon={state.gameWon}
+                                word={state.word}
+                                score={calculateScore(state)}
+                            />
+                            {state.scoreSaveError && (
+                                <Alert variant="warning" className="mt-3">
+                                    {state.scoreSaveError}
+                                </Alert>
+                            )}
+                        </>
+                )}
                 </>
             ) : (
                 <Spinner animation="border" className="mt-4" />
